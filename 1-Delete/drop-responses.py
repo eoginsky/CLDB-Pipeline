@@ -8,7 +8,7 @@ import psycopg2
 from psycopg2 import sql
 
 
-# --- Read DB connection parameters from a text file ---
+# Read DB connection parameters
 with open(r'C:\Users\Public\CLDB\cldb_params.txt', 'r', encoding='utf-8') as f:  # --- ToDo: change to your path
     lines = [line.strip() for line in f]
 DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD = lines
@@ -17,14 +17,16 @@ DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD = lines
 EXCEL_FILE_PATH = r"C:\Users\Public\CLDB\delete_list.xlsx"  # --- ToDo: change to your path
 
 
+# Function that gets response_id to delete from DB
 def get_response_ids(excel_file):
     df = pd.read_excel(excel_file)
     if 'response_id' not in df.columns:
-        raise ValueError("Excel-file 'response_id' has no 'response_id' column.")
+        raise ValueError("Excel-file 'delete_list.xlsx' has no 'response_id' column.")
     response_ids = df['response_id'].dropna().unique().tolist()
     return response_ids
 
 
+# Function that lists all tables that contain response_id
 def get_tables_with_response_id(conn):
     with conn.cursor() as cur:
         cur.execute("""
@@ -37,6 +39,7 @@ def get_tables_with_response_id(conn):
     return tables
 
 
+# Function to delete the rows with the response_ids
 def delete_response_ids_from_tables(conn, tables, response_ids):
     with conn.cursor() as cur:
         for schema, table in tables:
@@ -52,7 +55,7 @@ def delete_response_ids_from_tables(conn, tables, response_ids):
                 print(f"Error while deleting from {schema}.{table}: {e}")
         conn.commit()
 
-
+# Main script
 try:
     # Reading response_id from the Excel-file
     response_ids = get_response_ids(EXCEL_FILE_PATH)
@@ -81,9 +84,11 @@ try:
     delete_response_ids_from_tables(conn, tables, response_ids)
     print("Deletion completed.")
 
+# What to do if there is an error
 except Exception as e:
     print(f"Error: {e}")
 
+# Close connection
 finally:
     if 'conn' in locals() and conn:
         conn.close()

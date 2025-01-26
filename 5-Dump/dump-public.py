@@ -21,6 +21,7 @@ DB_OPTIONS = "target_session_attrs=read-write"
 output_dir = r"C:\Users\Public\CLDB\dump"  # --- ToDo: change to your path
 
 
+# Function that reads data from DB to Excel file
 def dump_table_to_excel(engine, table_name, output_dir):
     chunk_size = 1_000_000  # Number of rows per chunk
     offset = 0

@@ -8,7 +8,7 @@ import psycopg2
 import pandas as pd
 from psycopg2.extras import execute_values
 
-# --- Minimal change: Read connection parameters from a text file ---
+# Get connection parameters
 with open(r'C:\Users\Public\CLDB\cldb_params.txt', 'r', encoding='utf-8') as f:  # --- ToDo: change to your path
     lines = [line.strip() for line in f]
 DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD = lines
@@ -17,6 +17,7 @@ DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD = lines
 xlsx_directory = r"C:\Users\Public\CLDB\upload\5-update"  # --- ToDo: change to your path
 
 
+# Function that gets data from Excel and puts it in the SQL query
 def update_table_from_excel(conn, xlsx_file, table_name):
     df = pd.read_excel(xlsx_file)
     df.columns = [col.lower() for col in df.columns]
@@ -104,6 +105,8 @@ def update_table_from_excel(conn, xlsx_file, table_name):
         raise
 
 
+# Main script
+# Connect to the DB
 try:
     # Connection to the DB
     conn = psycopg2.connect(
@@ -115,7 +118,7 @@ try:
     )
     print("Connection established.")
 
-    # Reading the files in the directory
+    # Read the files in the directory
     for filename in os.listdir(xlsx_directory):
         if filename.endswith(".xlsx") or filename.endswith(".xls"):
             xlsx_file_path = os.path.join(xlsx_directory, filename)

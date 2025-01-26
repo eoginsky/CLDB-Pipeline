@@ -8,12 +8,12 @@ import psycopg2
 import pandas as pd
 from io import StringIO
 
-# --- Minimal change: Read the connection parameters from a text file ---
+# Read the connection parameters from a text file
 with open(r'C:\Users\Public\CLDB\cldb_params.txt', 'r', encoding='utf-8') as f:  # --- ToDo: change to your path
     lines = [line.strip() for line in f]
 DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD = lines
 
-# Keep DB_OPTIONS as is (assuming it’s not in db_params.txt)
+# Connection mode
 DB_OPTIONS = "target_session_attrs=read-write"
 
 # Directory containing the .xlsx files
@@ -41,7 +41,7 @@ def copy_xlsx_to_table(conn, xlsx_file, table_name):
         conn.commit()
         print(f"Data from {xlsx_file} has been successfully copied to {table_name}.")
 
-
+# Main script
 try:
     # Establish a database connection
     conn = psycopg2.connect(

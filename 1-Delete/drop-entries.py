@@ -10,7 +10,7 @@ import pandas as pd
 import psycopg2
 from psycopg2 import sql
 
-# --- Get DB connection parameters from a text file ---
+# Get DB connection parameters
 with open(r'C:\Users\Public\CLDB\cldb_params.txt', 'r', encoding='utf-8') as f:  # --- ToDo: change to your path
     lines = [line.strip() for line in f]
 DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD = lines
@@ -19,6 +19,7 @@ DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD = lines
 EXCEL_FILES_DIR = r"C:\Users\Public\CLDB\drop"  # --- ToDo: change to your path
 
 
+# Function that gets ids from the file
 def get_ids_from_excel(file_path):
     df = pd.read_excel(file_path)
     if 'id' not in df.columns:
@@ -27,6 +28,7 @@ def get_ids_from_excel(file_path):
     return ids
 
 
+# Function that deletes rows from DB tables
 def delete_ids_from_table(conn, table_name, ids):
     with conn.cursor() as cur:
         query = sql.SQL("DELETE FROM {table} WHERE id = ANY(%s)").format(
@@ -38,8 +40,8 @@ def delete_ids_from_table(conn, table_name, ids):
         except Exception as e:
             print(f"Error while deleting from '{table_name}': {e}")
 
-
-# Connecting to the DB
+# Main script
+# Connect to the DB
 try:
     conn = psycopg2.connect(
         host=DB_HOST,
@@ -53,7 +55,7 @@ except Exception as e:
     print(f"Error while connecting to the DB: {e}")
     exit(1)
 
-# Listing Excel files
+# List Excel files
 excel_files = [f for f in os.listdir(EXCEL_FILES_DIR) if f.endswith(('.xlsx', '.xls'))]
 if not excel_files:
     print("No Excel files found in the folder.")

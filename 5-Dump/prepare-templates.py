@@ -1,3 +1,7 @@
+"""
+This script prepares Excel upload templates from the dump files.
+"""
+
 import pandas as pd
 import os
 
